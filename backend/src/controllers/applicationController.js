@@ -1,20 +1,37 @@
 import { sql } from "../config/db.js";
+import cloudinary from "../config/cloudinary.js";
 
 export const create = async (req, res) => {
-  const { job_id, resume_url, cover_letter, status } = req.body;
+  const { job_id, status } = req.body;
   const { id: userId } = req.user;
+  const { resume, cover_letter } = req.files;
   try {
-    if (!job_id || !resume_url || !cover_letter)
+    if (!job_id || !resume || !cover_letter)
       return res.status(400).json({ message: "All Fields Required" });
-    // Default status to 'pending' if not provided
+
+    // Upload Resume to Cloudinary
+    const resumeUploadResult = await cloudinary.uploader.upload(resume.path, {
+      folder: "resumes", // Optional: specify folder in Cloudinary
+      resource_type: "auto", // Automatically detect file type (image, pdf, etc.)
+    });
+
+    // Upload Cover Letter to Cloudinary
+    const coverLetterUploadResult = await cloudinary.uploader.upload(
+      cover_letter.path,
+      {
+        folder: "cover_letters", // Optional: specify folder in Cloudinary
+        resource_type: "auto", // Automatically detect file type
+      }
+    );
+
     const applicationStatus = status || "pending";
     const validStatuses = ["pending", "reviewed", "accepted", "rejected"];
     if (!validStatuses.includes(applicationStatus)) {
       return res.status(400).json({ message: "Invalid Status" });
     }
     const application = await sql`
-    INSERT INTO applications (job_id, user_id, resume_url, cover_letter, status) 
-    VALUES (${job_id}, ${userId}, ${resume_url}, ${cover_letter}, ${applicationStatus}) 
+    INSERT INTO applications (job_id, user_id, resume_url, cover_letter_url, status) 
+    VALUES (${job_id}, ${userId}, ${resumeUploadResult.secure_url}, ${coverLetterUploadResult.secure_url}, ${applicationStatus}) 
     RETURNING *;`;
     console.log("Successfully Created Application");
     res.status(201).json(application[0]);
