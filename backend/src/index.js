@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import { sql } from "./config/db.js";
 
 const PORT = process.env.PORT || 5000;
@@ -19,8 +20,9 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
-// app.use("/api/jobs", jobRoutes);
-// app.use("/api/applications", applicationRoutes);
+app.use("/api/jobs", jobRoutes);
+app.use("/api/applications", applicationRoutes);
+app.use("/api/users", userRoutes);
 
 async function initDb() {
   try {
