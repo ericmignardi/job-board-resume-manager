@@ -2,19 +2,23 @@ import { sql } from "../config/db.js";
 import cloudinary from "../config/cloudinary.js";
 
 export const create = async (req, res) => {
-  const { job_id, status } = req.body;
+  const { status } = req.body;
+  // const { job_id } = req.body;
   const { id: userId } = req.user;
+  const { jobId } = req.params;
   const { resume, cover_letter } = req.files;
   try {
-    if (!job_id || !resume || !cover_letter)
-      return res.status(400).json({ message: "All Fields Required" });
-
+    if (!jobId) return res.status(400).json({ message: "All Fields Required" });
+    if (!resume || !cover_letter) {
+      return res
+        .status(400)
+        .json({ message: "Resume And Cover Letter Required" });
+    }
     // Upload Resume to Cloudinary
     const resumeUploadResult = await cloudinary.uploader.upload(resume.path, {
       folder: "resumes", // Optional: specify folder in Cloudinary
       resource_type: "auto", // Automatically detect file type (image, pdf, etc.)
     });
-
     // Upload Cover Letter to Cloudinary
     const coverLetterUploadResult = await cloudinary.uploader.upload(
       cover_letter.path,
@@ -23,7 +27,6 @@ export const create = async (req, res) => {
         resource_type: "auto", // Automatically detect file type
       }
     );
-
     const applicationStatus = status || "pending";
     const validStatuses = ["pending", "reviewed", "accepted", "rejected"];
     if (!validStatuses.includes(applicationStatus)) {
@@ -31,7 +34,7 @@ export const create = async (req, res) => {
     }
     const application = await sql`
     INSERT INTO applications (job_id, user_id, resume_url, cover_letter_url, status) 
-    VALUES (${job_id}, ${userId}, ${resumeUploadResult.secure_url}, ${coverLetterUploadResult.secure_url}, ${applicationStatus}) 
+    VALUES (${jobId}, ${userId}, ${resumeUploadResult.secure_url}, ${coverLetterUploadResult.secure_url}, ${applicationStatus}) 
     RETURNING *;`;
     console.log("Successfully Created Application");
     res.status(201).json(application[0]);

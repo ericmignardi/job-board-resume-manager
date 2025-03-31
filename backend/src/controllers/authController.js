@@ -13,14 +13,12 @@ export const register = async (req, res) => {
         .json({ message: "Password Must Be At Least 6 Characters" });
     const existingUser = await sql`
     SELECT * FROM users WHERE email = ${email} LIMIT 1;`;
-    console.log(`Existing User: ${existingUser}`);
     if (existingUser.length > 0)
       return res.status(400).json({ message: "Email Already In Use" });
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
     const newUser = await sql`
-    INSERT INTO users (name, email, password, role) VALUES (${name}, ${email}, ${hashedPassword}, ${role});`;
-    console.log(`New User: ${newUser}`);
+    INSERT INTO users (name, email, password, role) VALUES (${name}, ${email}, ${hashedPassword}, ${role}) RETURNING name, email, role;`;
     const token = jwt.sign({ user: newUser[0] }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
@@ -45,9 +43,12 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "All Fields Required" });
     const existingUser = await sql`
     SELECT * FROM users WHERE email = ${email} LIMIT 1;`;
-    if (!existingUser)
+    if (existingUser.length === 0)
       return res.status(401).json({ message: "Invalid Credentials" });
-    const isPasswordValid = bcrypt.compare(password, existingUser[0].password);
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      existingUser[0].password
+    );
     if (!isPasswordValid)
       return res.status(401).json({ message: "Invalid Credentials" });
     const token = jwt.sign({ user: existingUser[0] }, process.env.JWT_SECRET, {
@@ -70,8 +71,8 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
   try {
     res.cookie("token", "", { maxAge: "0" });
-    res.status(200).json({ message: "Successfully Logged Out" });
     console.log("Successfully Logged Out");
+    res.status(200).json({ message: "Successfully Logged Out" });
   } catch (error) {
     console.log("Error in logout: ", error.message);
     res.status(500).json({ message: "Internal Server Error" });

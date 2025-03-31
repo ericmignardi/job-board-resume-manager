@@ -18,9 +18,9 @@ export const read = async (req, res) => {
 
 export const update = async (req, res) => {
   const { id } = req.user;
-  const { name, email, password, role } = req.body;
+  const { name, password } = req.body;
   try {
-    if (!name || !email || !password || !role)
+    if (!name || !password)
       return res.status(400).json({ message: "All Fields Required" });
     const existingUser = await sql`
     SELECT * FROM users WHERE id = ${id};`;
@@ -30,7 +30,7 @@ export const update = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
     const updatedUser = await sql`
     UPDATE users 
-    SET name = ${name}, email = ${email}, password = ${hashedPassword}, role = ${role} 
+    SET name = ${name}, password = ${hashedPassword} 
     WHERE id = ${id} 
     RETURNING *;`;
     if (updatedUser.length === 0)
