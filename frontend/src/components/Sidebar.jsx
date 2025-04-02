@@ -1,47 +1,79 @@
 import React from "react";
+import { useAuthStore } from "../stores/useAuthStore.js";
 import { Link } from "react-router-dom";
-import { FaHome, FaFile, FaUser, FaBriefcase } from "react-icons/fa";
+import {
+  FaHome,
+  FaMoneyBill,
+  FaFile,
+  FaUser,
+  FaBriefcase,
+} from "react-icons/fa";
 
 const Sidebar = () => {
+  const { authUser } = useAuthStore();
+
+  if (!authUser) return null; // Prevent sidebar from rendering if user is not logged in
+
   return (
-    <div className="flex flex-col justify-start gap-6 text-white p-6 h-screen w-64 fixed">
-      <h3 className="text-2xl font-bold text-center text-primary">hired.io</h3>
-      <nav className="flex flex-col gap-4">
-        <ul className="flex flex-col gap-3">
+    <div className="flex flex-col justify-start items-center gap-4 p-4 h-screen">
+      <h3 className="text-2xl">Logo</h3>
+      <nav className="flex flex-col gap-4 justify-center items-center">
+        <ul className="flex flex-col gap-4 items-start">
           <li>
             <Link
               to="/dashboard/overview"
-              className="flex gap-3 items-center p-2 rounded-md hover:bg-gray-700 transition"
+              className="flex gap-4 items-center link link-hover"
             >
-              <FaHome />
-              Overview
+              <FaHome /> Overview
             </Link>
           </li>
-          <li>
-            <Link
-              to="/dashboard/jobs"
-              className="flex gap-3 items-center p-2 rounded-md hover:bg-gray-700 transition"
-            >
-              <FaBriefcase />
-              Jobs
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/dashboard/applications"
-              className="flex gap-3 items-center p-2 rounded-md hover:bg-gray-700 transition"
-            >
-              <FaFile />
-              Applications
-            </Link>
-          </li>
+
+          {authUser.role === "job_seeker" ? (
+            <>
+              <li>
+                <Link
+                  to="/dashboard/jobs"
+                  className="flex gap-4 items-center link link-hover"
+                >
+                  <FaMoneyBill /> Jobs
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard/applications"
+                  className="flex gap-4 items-center link link-hover"
+                >
+                  <FaFile /> Applications
+                </Link>
+              </li>
+            </>
+          ) : (
+            <>
+              <li>
+                <Link
+                  to="/dashboard/employer/jobs"
+                  className="flex gap-4 items-center link link-hover"
+                >
+                  <FaBriefcase /> Manage Jobs
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard/employer/applications"
+                  className="flex gap-4 items-center link link-hover"
+                >
+                  <FaFile /> Applications
+                </Link>
+              </li>
+            </>
+          )}
+
           <li>
             <Link
               to="/dashboard/profile"
-              className="flex gap-3 items-center p-2 rounded-md hover:bg-gray-700 transition"
+              className="flex gap-4 items-center link link-hover"
             >
-              <FaUser />
-              Profile
+              <FaUser /> Profile
             </Link>
           </li>
         </ul>

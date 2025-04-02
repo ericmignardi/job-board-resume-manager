@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import LoginForm from "../components/LoginForm.jsx";
 import RegisterForm from "../components/RegisterForm.jsx";
-import { Link, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuthStore } from "../stores/useAuthStore.js";
 
 const HomePage = () => {
@@ -21,9 +21,6 @@ const HomePage = () => {
             ? "Create an account to start your journey."
             : "Sign in to access your account and apply for jobs."}
         </p>
-        <Link to="/jobs" className="btn btn-outline rounded-full font-bold">
-          View Jobs
-        </Link>
       </div>
       <div className="flex flex-col justify-center items-center gap-4 bg-base-300 h-full p-8">
         {isRegistering ? <RegisterForm /> : <LoginForm />}

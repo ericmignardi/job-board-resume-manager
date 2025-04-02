@@ -20,21 +20,23 @@ const ApplicationsPage = () => {
           <table className="table w-full table-zebra">
             <thead>
               <tr>
-                <th>Job ID</th>
-                <th>User ID</th>
+                <th>Job Title</th>
                 <th>Resume URL</th>
                 <th>Cover Letter URL</th>
                 <th>Status</th>
+                <th>Applied</th>
               </tr>
             </thead>
             <tbody>
               {applications.map((application) => (
                 <tr key={application.id}>
-                  <td>{application.job_id}</td>
-                  <td>{application.user_id}</td>
+                  <td>{application.job_title}</td>
                   <td>{application.resume_url}</td>
                   <td>{application.cover_letter}</td>
-                  <td>{application.status}</td>
+                  <td>{application.status.toUpperCase()}</td>
+                  <td>
+                    {new Date(application.applied_at).toLocaleDateString()}
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios.js";
+import toast from "react-hot-toast";
 
 export const useAuthStore = create((set) => ({
   authUser: null,
@@ -10,9 +11,11 @@ export const useAuthStore = create((set) => ({
     try {
       const response = await axiosInstance.get("/auth/verify");
       set({ authUser: response.data });
+      toast.success("Successfully Verified User");
     } catch (error) {
       console.log("Error in verify: ", error.message);
       set({ authUser: null });
+      toast.error("Error Verifying User");
     } finally {
       set({ isVerifyingAuth: false });
     }
@@ -22,8 +25,10 @@ export const useAuthStore = create((set) => ({
     try {
       const response = await axiosInstance.post("/auth/register", formData);
       set({ authUser: response.data });
+      toast.success("Successfully Registered User");
     } catch (error) {
       console.log("Error in register: ", error.message);
+      toast.error("Error Registering User");
     } finally {
       set({ isRegistering: false });
     }
@@ -33,8 +38,10 @@ export const useAuthStore = create((set) => ({
     try {
       const response = await axiosInstance.post("/auth/login", formData);
       set({ authUser: response.data });
+      toast.success("Successfully Logged In");
     } catch (error) {
       console.log("Error in login: ", error.message);
+      toast.error("Error Logging In");
     } finally {
       set({ isLoggingIn: false });
     }
@@ -43,8 +50,10 @@ export const useAuthStore = create((set) => ({
     try {
       await axiosInstance.post("/auth/logout");
       set({ authUser: null });
+      toast.success("Successfully Logged Out");
     } catch (error) {
       console.log("Error in logout: ", error.message);
+      toast.error("Error Logging Out");
     }
   },
 }));

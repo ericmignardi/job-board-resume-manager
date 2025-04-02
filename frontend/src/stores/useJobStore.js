@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios.js";
+import toast from "react-hot-toast";
 
 export const useJobStore = create((set, get) => ({
   jobs: [],
@@ -14,8 +15,10 @@ export const useJobStore = create((set, get) => ({
     try {
       const response = await axiosInstance.post("/jobs", formData);
       set((state) => ({ jobs: [...state.jobs, response.data] })); // Append new job
+      toast.success("Successfully Created Job");
     } catch (error) {
       console.log("Error in create:", error.message);
+      toast.error("Error Creating Job");
     } finally {
       set({ isCreatingJob: false });
     }
@@ -25,8 +28,10 @@ export const useJobStore = create((set, get) => ({
     try {
       const response = await axiosInstance.get("/jobs");
       set({ jobs: response.data });
+      toast.success("Successfully Read Jobs");
     } catch (error) {
       console.log("Error in read:", error.message);
+      toast.error("Error Reading Jobs");
     } finally {
       set({ isReadingJobs: false });
     }
@@ -35,9 +40,11 @@ export const useJobStore = create((set, get) => ({
     set({ isReadingJobById: true });
     try {
       const response = await axiosInstance.get(`/jobs/${id}`);
+      toast.success("Successfully Read Job");
       return response.data; // Don't store it in `jobs`, just return the single job
     } catch (error) {
       console.log("Error in readById:", error.message);
+      toast.error("Error Reading Job");
     } finally {
       set({ isReadingJobById: false });
     }
@@ -51,8 +58,10 @@ export const useJobStore = create((set, get) => ({
           (job) => (job.id === id ? response.data : job) // Update the specific job
         ),
       }));
+      toast.success("Successfully Updated Job");
     } catch (error) {
       console.log("Error in updateById:", error.message);
+      toast.error("Error Updating Job");
     } finally {
       set({ isUpdatingJob: false });
     }
@@ -64,8 +73,10 @@ export const useJobStore = create((set, get) => ({
       set((state) => ({
         jobs: state.jobs.filter((job) => job.id !== id), // Remove deleted job
       }));
+      toast.success("Successfully Deleted Job");
     } catch (error) {
       console.log("Error in deleteById:", error.message);
+      toast.error("Error Deleting Job");
     } finally {
       set({ isDeletingJob: false });
     }

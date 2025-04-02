@@ -6,6 +6,7 @@ import jobRoutes from "./routes/jobRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import { sql } from "./config/db.js";
+import fileUpload from "express-fileupload";
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -18,6 +19,12 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+  })
+);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/jobs", jobRoutes);

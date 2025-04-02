@@ -1,23 +1,28 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios.js";
+import toast from "react-hot-toast";
 
 export const useApplicationStore = create((set) => ({
   applications: [],
-  selectedApplication: null,
   isApplicationsLoading: false,
   isCreatingApplication: false,
   isReadingApplications: false,
   isReadingApplicationById: false,
   isUpdatingApplication: false,
-  create: async (formData) => {
+  create: async (id, formData) => {
     set({ isCreatingApplication: true });
     try {
-      const response = await axiosInstance.post("/applications", formData);
+      const response = await axiosInstance.post(
+        `/applications/${id}`,
+        formData
+      );
       set((state) => ({
-        applications: [...state.applications, response.data], // Append new application
+        applications: [...state.applications, response.data],
       }));
+      toast.success("Successfully Created Application");
     } catch (error) {
       console.log("Error in create: ", error.message);
+      toast.error("Error Creating Application");
     } finally {
       set({ isCreatingApplication: false });
     }
@@ -27,8 +32,10 @@ export const useApplicationStore = create((set) => ({
     try {
       const response = await axiosInstance.get("/applications");
       set({ applications: response.data });
+      toast.success("Successfully Read All Applications");
     } catch (error) {
       console.log("Error in read: ", error.message);
+      toast.error("Error Reading Applications");
     } finally {
       set({ isReadingApplications: false });
     }
@@ -36,11 +43,27 @@ export const useApplicationStore = create((set) => ({
   readById: async (id) => {
     set({ isReadingApplicationById: true });
     try {
-      const response = await axiosInstance.get(`/applications/${id}`);
-      set({ selectedApplication: response.data }); // Store in state
-      return response.data; // Also return it for immediate use
+      const response = await axiosInstance.get(`/applications/job/${id}`);
+      toast.success(`Successfully Read Applications For Job ID: ${id}`);
+      return response.data;
     } catch (error) {
       console.log("Error in readById: ", error.message);
+      toast.error(`Error Reading Applications For Job ID: ${id}`);
+    } finally {
+      set({ isReadingApplicationById: false });
+    }
+  },
+  readByApplicationId: async (id) => {
+    set({ isReadingApplicationById: true });
+    try {
+      const response = await axiosInstance.get(
+        `/applications/application/${id}`
+      );
+      toast.success(`Successfully Read Applications For Job ID: ${id}`);
+      return response.data;
+    } catch (error) {
+      console.log("Error in readById: ", error.message);
+      toast.error(`Error Reading Applications For Job ID: ${id}`);
     } finally {
       set({ isReadingApplicationById: false });
     }
@@ -54,8 +77,10 @@ export const useApplicationStore = create((set) => ({
           application.id === id ? response.data : application
         ),
       }));
+      toast.success(`Successfully Updated Application ID: ${id}`);
     } catch (error) {
       console.log("Error in updateById: ", error.message);
+      toast.error(`Error Updating Application ID: ${id}`);
     } finally {
       set({ isUpdatingApplication: false });
     }
