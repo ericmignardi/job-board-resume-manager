@@ -1,26 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useJobStore } from "../stores/useJobStore.js";
-import { useApplicationStore } from "../stores/useApplicationStore.js";
 
 const EmployerJobDetailsPage = () => {
   const { jobId } = useParams(); // Get job ID from URL
-  const { readById, isReadingJobById } = useJobStore();
-  const { create, isCreatingApplication } = useApplicationStore();
+  const { readById, updateById, isReadingJobById, isUpdatingJobById } =
+    useJobStore();
   const [job, setJob] = useState(null);
   const [openForm, setFormOpen] = useState(false);
   const [formData, setFormData] = useState({
-    job_id: "",
-    user_id: "",
-    resume_url: null,
-    cover_letter: null,
-    status: "",
+    title: "",
+    description: "",
+    company_name: "",
+    location: "",
+    employment_type: "",
+    salary: "",
   });
 
   useEffect(() => {
     const fetchJob = async () => {
       const jobData = await readById(jobId);
       setJob(jobData);
+      setFormData({
+        title: jobData?.title || "",
+        description: jobData?.description || "",
+        company_name: jobData?.company_name || "",
+        location: jobData?.location || "",
+        employment_type: jobData?.employment_type || "",
+        salary: jobData?.salary || "",
+      });
     };
 
     fetchJob();
@@ -34,31 +42,23 @@ const EmployerJobDetailsPage = () => {
     return <p>Job not found.</p>;
   }
 
-  const handleFileChange = (e) => {
-    const { name, files } = e.target;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: files[0], // Store the file object
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.resume || !formData.cover_letter) {
-      alert("Resume and Cover Letter are required!");
-      return;
-    }
-
-    // Create FormData object
-    const applicationData = new FormData();
-    applicationData.append("resume", formData.resume);
-    applicationData.append("cover_letter", formData.cover_letter);
-
     try {
-      await create(jobId, applicationData);
+      await updateById(jobId, formData);
+      alert("Job updated successfully!");
+      setFormOpen(false); // Close the form after updating
     } catch (error) {
-      console.error("Error submitting application:", error);
+      console.error("Error updating job:", error);
     }
   };
 
@@ -81,7 +81,7 @@ const EmployerJobDetailsPage = () => {
         onClick={() => setFormOpen(!openForm)}
         className="btn btn-primary rounded-full"
       >
-        {openForm ? "Cancel" : "Apply Now"}
+        {openForm ? "Cancel" : "Edit Job"}
       </button>
 
       {openForm && (
@@ -89,36 +89,70 @@ const EmployerJobDetailsPage = () => {
           onSubmit={handleSubmit}
           className="mt-6 space-y-4 flex flex-col justify-center items-center gap-4"
         >
-          <div className="flex gap-4">
-            <label htmlFor="resume">
-              <input
-                className="file-input"
-                type="file"
-                name="resume"
-                id="resume"
-                accept=".pdf,.doc,.docx"
-                onChange={handleFileChange}
-                required
-              />
-            </label>
-            <label htmlFor="cover_letter">
-              <input
-                className="file-input"
-                type="file"
-                name="cover_letter"
-                id="cover_letter"
-                accept=".pdf,.doc,.docx"
-                onChange={handleFileChange}
-                required
-              />
-            </label>
-          </div>
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            placeholder="Job Title"
+            className="input input-bordered w-full max-w-md"
+            required
+          />
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            placeholder="Job Description"
+            className="textarea textarea-bordered w-full max-w-md"
+            required
+          />
+          <input
+            type="text"
+            name="company_name"
+            value={formData.company_name}
+            onChange={handleChange}
+            placeholder="Company Name"
+            className="input input-bordered w-full max-w-md"
+            required
+          />
+          <input
+            type="text"
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            placeholder="Location"
+            className="input input-bordered w-full max-w-md"
+            required
+          />
+          <select
+            name="employment_type"
+            value={formData.employment_type}
+            onChange={handleChange}
+            className="select select-bordered w-full max-w-md"
+            required
+          >
+            <option value="" disabled>
+              Select Employment Type
+            </option>
+            <option value="full-time">Full-Time</option>
+            <option value="part-time">Part-Time</option>
+            <option value="contract">Contract</option>
+            <option value="internship">Internship</option>
+          </select>
+          <input
+            type="number"
+            name="salary"
+            value={formData.salary}
+            onChange={handleChange}
+            placeholder="Salary (optional)"
+            className="input input-bordered w-full max-w-md"
+          />
           <button
             type="submit"
             className="btn btn-success rounded-full"
-            disabled={isCreatingApplication}
+            disabled={isUpdatingJobById}
           >
-            {isCreatingApplication ? "Submitting..." : "Submit"}
+            {isUpdatingJobById ? "Updating..." : "Update Job"}
           </button>
         </form>
       )}

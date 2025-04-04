@@ -44,13 +44,16 @@ export const read = async (req, res) => {
   const { id: userId, role } = req.user;
 
   try {
-    if (role !== "employer") {
-      return res.status(403).json({ message: "Forbidden: Must Be Employer" });
-    }
-
-    const jobs = await sql`
+    let jobs;
+    if (role === "employer") {
+      jobs = await sql`
       SELECT * FROM jobs WHERE posted_by = ${userId};
     `;
+    } else {
+      jobs = await sql`
+      SELECT * FROM jobs;
+    `;
+    }
 
     if (jobs.length === 0) {
       return res.status(404).json({ message: "No Jobs Found" });

@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage.jsx";
 import DashboardLayout from "./pages/DashboardLayout.jsx";
-import OverviewPage from "./pages/OverviewPage.jsx";
 import JobListingsPage from "./pages/JobListingsPage.jsx";
 import JobDetailsPage from "./pages/JobDetailsPage.jsx";
 import EmployerJobListingsPage from "./pages/EmployerJobListingsPage.jsx";
@@ -32,10 +31,9 @@ const App = () => {
 
         {/* DASHBOARD */}
         <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route index element={<OverviewPage />} />{" "}
-          <Route path="overview" element={<OverviewPage />} />
+          <Route index element={<JobListingsPage />} />{" "}
           <Route path="jobs" element={<JobListingsPage />} />
-          <Route path="jobs/:id" element={<JobDetailsPage />} />
+          <Route path="jobs/:jobId" element={<JobDetailsPage />} />
           <Route path="applications" element={<ApplicationsPage />} />
           <Route path="profile" element={<ProfilePage />} />
           {/* EMPLOYER DASHBOARD */}

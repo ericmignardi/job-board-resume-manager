@@ -56,26 +56,26 @@ const RegisterForm = () => {
         onChange={handleChange}
       />
       <div className="flex gap-4">
-        <label>
-          <input
-            type="radio"
-            name="role"
-            value="job_seeker"
-            checked={formData.role === "job_seeker"}
-            onChange={handleChange}
-          />
-          Job Seeker
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="role"
-            value="employer"
-            checked={formData.role === "employer"}
-            onChange={handleChange}
-          />
-          Employer
-        </label>
+        <input
+          className="radio radio-primary"
+          type="radio"
+          name="role"
+          value="job_seeker"
+          id="job_seeker"
+          checked={formData.role === "job_seeker"}
+          onChange={handleChange}
+        />
+        <label htmlFor="job_seeker">Job Seeker</label>
+        <input
+          className="radio radio-primary"
+          type="radio"
+          name="role"
+          value="employer"
+          id="employer"
+          checked={formData.role === "employer"}
+          onChange={handleChange}
+        />
+        <label htmlFor="employer">Employer</label>
       </div>
       <button
         type="submit"

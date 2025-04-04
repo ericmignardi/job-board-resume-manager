@@ -11,8 +11,8 @@ const HomePage = () => {
   if (authUser) return <Navigate to="/dashboard" replace />;
 
   return (
-    <div className="h-screen grid grid-cols-2 justify-center items-center">
-      <div className="flex flex-col justify-center items-center gap-4 bg-primary h-full text-white p-8">
+    <div className="h-screen grid grid-cols-1 md:grid-cols-2 justify-center items-center">
+      <div className="hidden md:flex flex-col justify-center items-center gap-4 bg-primary h-full text-white p-8">
         <h1 className="text-4xl font-bold">
           {isRegistering ? "Join Us Today!" : "Welcome Back!"}
         </h1>

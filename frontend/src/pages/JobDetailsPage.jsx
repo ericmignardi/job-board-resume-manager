@@ -4,7 +4,7 @@ import { useJobStore } from "../stores/useJobStore.js";
 import { useApplicationStore } from "../stores/useApplicationStore.js";
 
 const JobDetailsPage = () => {
-  const { id: jobId } = useParams(); // Get job ID from URL
+  const { jobId } = useParams(); // Get job ID from URL
   const { readById, isReadingJobById } = useJobStore();
   const { create, isCreatingApplication } = useApplicationStore();
   const [job, setJob] = useState(null);

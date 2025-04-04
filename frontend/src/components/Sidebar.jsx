@@ -16,18 +16,9 @@ const Sidebar = () => {
 
   return (
     <div className="flex flex-col justify-start items-center gap-4 p-4 h-screen">
-      <h3 className="text-2xl">Logo</h3>
+      <h3 className="text-2xl text-primary">Job Board</h3>
       <nav className="flex flex-col gap-4 justify-center items-center">
         <ul className="flex flex-col gap-4 items-start">
-          <li>
-            <Link
-              to="/dashboard/overview"
-              className="flex gap-4 items-center link link-hover"
-            >
-              <FaHome /> Overview
-            </Link>
-          </li>
-
           {authUser.role === "job_seeker" ? (
             <>
               <li>
