@@ -14,7 +14,7 @@ export const useJobStore = create((set, get) => ({
     set({ isCreatingJob: true });
     try {
       const response = await axiosInstance.post("/jobs", formData);
-      set((state) => ({ jobs: [...state.jobs, response.data] })); // Append new job
+      set((state) => ({ jobs: [...state.jobs, response.data] }));
       toast.success("Successfully Created Job");
     } catch (error) {
       console.log("Error in create:", error.message);
@@ -41,7 +41,7 @@ export const useJobStore = create((set, get) => ({
     try {
       const response = await axiosInstance.get(`/jobs/${id}`);
       toast.success("Successfully Read Job");
-      return response.data; // Don't store it in `jobs`, just return the single job
+      return response.data;
     } catch (error) {
       console.log("Error in readById:", error.message);
       toast.error("Error Reading Job");
@@ -54,9 +54,7 @@ export const useJobStore = create((set, get) => ({
     try {
       const response = await axiosInstance.put(`/jobs/${id}`, formData);
       set((state) => ({
-        jobs: state.jobs.map(
-          (job) => (job.id === id ? response.data : job) // Update the specific job
-        ),
+        jobs: state.jobs.map((job) => (job.id === id ? response.data : job)),
       }));
       toast.success("Successfully Updated Job");
     } catch (error) {
@@ -71,7 +69,7 @@ export const useJobStore = create((set, get) => ({
     try {
       await axiosInstance.delete(`/jobs/${id}`);
       set((state) => ({
-        jobs: state.jobs.filter((job) => job.id !== id), // Remove deleted job
+        jobs: state.jobs.filter((job) => job.id !== id),
       }));
       toast.success("Successfully Deleted Job");
     } catch (error) {

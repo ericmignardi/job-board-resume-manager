@@ -15,8 +15,7 @@ const Sidebar = () => {
   if (!authUser) return null; // Prevent sidebar from rendering if user is not logged in
 
   return (
-    <div className="flex flex-col justify-start items-center gap-4 p-4 h-screen">
-      <h3 className="text-2xl text-primary">Job Board</h3>
+    <div className="flex flex-col justify-start items-center gap-4 p-4 h-screen bg-primary">
       <nav className="flex flex-col gap-4 justify-center items-center">
         <ul className="flex flex-col gap-4 items-start">
           {authUser.role === "job_seeker" ? (
@@ -58,15 +57,6 @@ const Sidebar = () => {
               </li>
             </>
           )}
-
-          <li>
-            <Link
-              to="/dashboard/profile"
-              className="flex gap-4 items-center link link-hover"
-            >
-              <FaUser /> Profile
-            </Link>
-          </li>
         </ul>
       </nav>
     </div>

@@ -7,7 +7,6 @@ import JobDetailsPage from "./pages/JobDetailsPage.jsx";
 import EmployerJobListingsPage from "./pages/EmployerJobListingsPage.jsx";
 import EmployerApplicationsPage from "./pages/EmployerApplicationsPage.jsx";
 import ApplicationsPage from "./pages/ApplicationsPage.jsx";
-import ProfilePage from "./pages/ProfilePage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import { useAuthStore } from "./stores/useAuthStore.js";
 import EmployerApplicationDetailsPage from "./pages/EmployerApplicationDetailsPage.jsx";
@@ -35,7 +34,6 @@ const App = () => {
           <Route path="jobs" element={<JobListingsPage />} />
           <Route path="jobs/:jobId" element={<JobDetailsPage />} />
           <Route path="applications" element={<ApplicationsPage />} />
-          <Route path="profile" element={<ProfilePage />} />
           {/* EMPLOYER DASHBOARD */}
           <Route
             path="employer/jobs"

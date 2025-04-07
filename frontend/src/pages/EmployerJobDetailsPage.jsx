@@ -52,11 +52,10 @@ const EmployerJobDetailsPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       await updateById(jobId, formData);
       alert("Job updated successfully!");
-      setFormOpen(false); // Close the form after updating
+      setFormOpen(false);
     } catch (error) {
       console.error("Error updating job:", error);
     }

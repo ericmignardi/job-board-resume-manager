@@ -11,7 +11,6 @@ export const create = async (req, res) => {
   }
   const { resume, cover_letter } = req.files;
   try {
-    // Upload files to Cloudinary
     const resumeUploadResult = await cloudinary.uploader.upload(
       resume.tempFilePath,
       {
@@ -26,12 +25,10 @@ export const create = async (req, res) => {
         resource_type: "auto",
       }
     );
-    // Insert application into DB
     const application = await sql`
       INSERT INTO applications (job_id, user_id, resume_url, cover_letter, status) 
       VALUES (${jobId}, ${userId}, ${resumeUploadResult.secure_url}, ${coverLetterUploadResult.secure_url}, 'pending')
-      RETURNING *;
-    `;
+      RETURNING *;`;
     res.status(201).json(application[0]);
   } catch (error) {
     console.error("Error in create:", error.message);
@@ -48,17 +45,14 @@ export const read = async (req, res) => {
       SELECT applications.*, jobs.title AS job_title
       FROM applications
       JOIN jobs ON applications.job_id = jobs.id
-      WHERE jobs.posted_by = ${userId};
-    `;
+      WHERE jobs.posted_by = ${userId};`;
     } else {
       applications = await sql`
       SELECT applications.*, jobs.title AS job_title
       FROM applications
       JOIN jobs ON applications.job_id = jobs.id
-      WHERE applications.user_id = ${userId};
-    `;
+      WHERE applications.user_id = ${userId};`;
     }
-
     res.status(200).json(applications);
   } catch (error) {
     console.error("Error in read:", error.message);
@@ -67,12 +61,11 @@ export const read = async (req, res) => {
 };
 
 export const readById = async (req, res) => {
-  const { id: userId, role } = req.user; // Include role to determine employer vs. applicant
+  const { id: userId, role } = req.user;
   const { jobId } = req.params;
   try {
     let applications;
     if (role === "employer") {
-      // Ensure employer owns the job posting
       const jobs = await sql`
       SELECT * FROM jobs WHERE id = ${jobId} AND posted_by = ${userId};`;
       if (jobs.length === 0) {
@@ -86,10 +79,8 @@ export const readById = async (req, res) => {
         JOIN users ON applications.user_id = users.id
         WHERE applications.job_id = ${jobId};`;
     } else {
-      // If applicant, only return their application for the job
       applications = await sql`
-        SELECT * FROM applications WHERE job_id = ${jobId} AND user_id = ${userId};
-      `;
+        SELECT * FROM applications WHERE job_id = ${jobId} AND user_id = ${userId};`;
       if (applications.length === 0) {
         return res.status(404).json({ message: "Application not found" });
       }
@@ -102,12 +93,11 @@ export const readById = async (req, res) => {
 };
 
 export const readByApplicationId = async (req, res) => {
-  const { id: userId, role } = req.user; // Include role to determine employer vs. applicant
-  const { applicationId } = req.params; // Get application ID from the URL
+  const { id: userId, role } = req.user;
+  const { applicationId } = req.params;
   try {
     let application;
     if (role === "employer") {
-      // Ensure employer owns the job posting associated with the application
       const jobsApplications = await sql`
         SELECT jobs.id FROM jobs 
         JOIN applications ON jobs.id = applications.job_id
@@ -118,7 +108,6 @@ export const readByApplicationId = async (req, res) => {
           .status(403)
           .json({ message: "Unauthorized: Must Be Original Publisher" });
       }
-      // Fetch application details
       application = await sql`
         SELECT applications.*, users.name AS applicant_name, users.email AS applicant_email
         FROM applications
@@ -126,7 +115,6 @@ export const readByApplicationId = async (req, res) => {
         WHERE applications.id = ${applicationId};
       `;
     } else {
-      // If applicant, only return their application
       application = await sql`
         SELECT * FROM applications WHERE id = ${applicationId} AND user_id = ${userId};
       `;
@@ -134,7 +122,7 @@ export const readByApplicationId = async (req, res) => {
         return res.status(404).json({ message: "Application not found" });
       }
     }
-    res.status(200).json(application[0]); // Assuming only one application will be returned
+    res.status(200).json(application[0]);
   } catch (error) {
     console.error("Error in readByApplicationId:", error.message);
     res.status(500).json({ message: "Internal Server Error" });
@@ -149,14 +137,12 @@ export const updateById = async (req, res) => {
     return res.status(400).json({ message: "Status field is required" });
   }
   try {
-    // Validate application existence
     const applicationExists = await sql`
       SELECT * FROM applications WHERE id = ${applicationId};
     `;
     if (applicationExists.length === 0) {
       return res.status(404).json({ message: "Application not found" });
     }
-    // Verify employer owns the job posting before updating
     const jobsApplications = await sql`
       SELECT jobs.id FROM jobs 
       JOIN applications ON jobs.id = applications.job_id

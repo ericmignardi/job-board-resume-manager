@@ -25,15 +25,6 @@ const Navbar = () => {
               Log Out
             </button>
           </li>
-          <li>
-            <Link to="/dashboard/profile">
-              <div className="avatar avatar-online">
-                <div className="ring ring-primary ring-offset-base-100 ring-offset-2 w-10 rounded-full">
-                  <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
-                </div>
-              </div>
-            </Link>
-          </li>
         </ul>
       </nav>
     </header>

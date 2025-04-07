@@ -4,7 +4,7 @@ import { useJobStore } from "../stores/useJobStore.js";
 import { useApplicationStore } from "../stores/useApplicationStore.js";
 
 const JobDetailsPage = () => {
-  const { jobId } = useParams(); // Get job ID from URL
+  const { jobId } = useParams();
   const { readById, isReadingJobById } = useJobStore();
   const { create, isCreatingApplication } = useApplicationStore();
   const [job, setJob] = useState(null);
@@ -38,23 +38,19 @@ const JobDetailsPage = () => {
     const { name, files } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: files[0], // Store the file object
+      [name]: files[0],
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!formData.resume || !formData.cover_letter) {
       alert("Resume and Cover Letter are required!");
       return;
     }
-
-    // Create FormData object
     const applicationData = new FormData();
     applicationData.append("resume", formData.resume);
     applicationData.append("cover_letter", formData.cover_letter);
-
     try {
       await create(jobId, applicationData);
     } catch (error) {
@@ -83,7 +79,6 @@ const JobDetailsPage = () => {
       >
         {openForm ? "Cancel" : "Apply Now"}
       </button>
-
       {openForm && (
         <form
           onSubmit={handleSubmit}

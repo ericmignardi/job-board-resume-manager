@@ -37,7 +37,6 @@ const EmployerJobsPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       await create(formData);
       setFormOpen(false);
@@ -49,7 +48,7 @@ const EmployerJobsPage = () => {
         employment_type: "",
         salary: "",
       });
-      read(); // Refresh jobs
+      read();
     } catch (error) {
       console.error("Error creating job:", error);
     }
@@ -57,10 +56,9 @@ const EmployerJobsPage = () => {
 
   const handleDelete = async (jobId) => {
     if (!window.confirm("Are you sure you want to delete this job?")) return;
-
     try {
       await deleteById(jobId);
-      read(); // Refresh job list
+      read();
     } catch (error) {
       console.error("Error deleting job:", error);
     }
@@ -69,15 +67,12 @@ const EmployerJobsPage = () => {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Your Job Listings</h1>
-
-      {/* Toggle Create Job Form */}
       <button
         onClick={() => setOpenForm(!openForm)}
         className="btn btn-success mb-4"
       >
         {openForm ? "Cancel" : "Create New Job"}
       </button>
-
       {openForm && (
         <form
           onSubmit={handleSubmit}
@@ -150,8 +145,6 @@ const EmployerJobsPage = () => {
           </button>
         </form>
       )}
-
-      {/* Job Listings Table */}
       {isReadingJobs ? (
         <p>Loading your jobs...</p>
       ) : jobs.length === 0 ? (

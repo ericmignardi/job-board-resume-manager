@@ -3,7 +3,7 @@ import { useApplicationStore } from "../stores/useApplicationStore.js";
 import { useParams } from "react-router-dom";
 
 const EmployerApplicationDetailsPage = () => {
-  const { applicationId } = useParams(); // Get application ID from URL
+  const { applicationId } = useParams();
   const {
     readByApplicationId,
     isReadingApplicationById,
@@ -11,28 +11,27 @@ const EmployerApplicationDetailsPage = () => {
     isUpdatingApplication,
   } = useApplicationStore();
   const [application, setApplication] = useState(null);
-  const [status, setStatus] = useState(""); // State to manage the updated status
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
     const fetchApplication = async () => {
       const applicationData = await readByApplicationId(applicationId);
-      setApplication(applicationData); // assuming applicationData is an object
-      setStatus(applicationData.status); // Set initial status from application data
+      setApplication(applicationData);
+      setStatus(applicationData.status);
     };
-
     fetchApplication();
   }, [applicationId, readByApplicationId]);
 
   const handleStatusChange = (e) => {
-    setStatus(e.target.value); // Update status in local state
+    setStatus(e.target.value);
   };
 
   const handleStatusUpdate = async (e) => {
     e.preventDefault();
     if (!status) {
-      return; // Prevent submission if no status is selected
+      return;
     }
-    await updateById(applicationId, { status }); // Call the update function with the new status
+    await updateById(applicationId, { status });
   };
 
   if (isReadingApplicationById) {
@@ -46,8 +45,6 @@ const EmployerApplicationDetailsPage = () => {
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-4">Application Details</h1>
-
-      {/* Displaying the application details */}
       <p>
         <strong>Application ID:</strong> {application.id}
       </p>
@@ -84,8 +81,6 @@ const EmployerApplicationDetailsPage = () => {
         <strong>Applied on:</strong>{" "}
         {new Date(application.applied_at).toLocaleDateString()}
       </p>
-
-      {/* Status Update Form */}
       <form onSubmit={handleStatusUpdate}>
         <div className="mt-4">
           <label htmlFor="status" className="block text-lg font-medium">
