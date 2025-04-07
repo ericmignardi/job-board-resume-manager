@@ -13,6 +13,7 @@
     "@tailwindcss/vite": "^4.0.17",
     "axios": "^1.8.4",
     "express-fileupload": "^1.5.1",
+    "job-board-resume-manager": "file:..",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.2",
