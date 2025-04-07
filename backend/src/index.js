@@ -7,8 +7,10 @@ import applicationRoutes from "./routes/applicationRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import { sql } from "./config/db.js";
 import fileUpload from "express-fileupload";
+import path from "path";
 
 const PORT = process.env.PORT || 5000;
+const __dirname = path.resolve();
 const app = express();
 
 app.use(
@@ -30,6 +32,13 @@ app.use("/api/auth", authRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/users", userRoutes);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "/frontend/dist")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+  });
+}
 
 async function initDb() {
   try {
