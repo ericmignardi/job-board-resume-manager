@@ -38,17 +38,16 @@ export const create = async (req, res) => {
 
 export const read = async (req, res) => {
   const { id: userId, role } = req.user;
+  const { title } = req.query;
   try {
-    let jobs;
+    let query = sql`SELECT * FROM jobs`;
     if (role === "employer") {
-      jobs = await sql`
-      SELECT * FROM jobs WHERE posted_by = ${userId};
-    `;
-    } else {
-      jobs = await sql`
-      SELECT * FROM jobs;
-    `;
+      query = sql`SELECT * FROM jobs WHERE posted_by = ${userId}`;
     }
+    if (title) {
+      query = sql`${query} AND title ILIKE ${`%${title}%`}`;
+    }
+    const jobs = await query;
     if (jobs.length === 0) {
       return res.status(404).json({ message: "No Jobs Found" });
     }
